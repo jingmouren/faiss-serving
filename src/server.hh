@@ -14,6 +14,7 @@ struct CLIArguments {
   const size_t port;
   const size_t listenerThreads;
   const size_t numK;
+  const size_t efSearch;
   const bool debug;
 };
 
@@ -27,6 +28,7 @@ inline const CLIArguments parseCLIArgs(int argc, char** argv) {
     ("p,port", "Port", cxxopts::value<size_t>()->default_value("8080"))
     ("t,listener-threads", "Num Threads to use for http server", cxxopts::value<size_t>()->default_value("4"))
     ("k,num-k", "Num K for Faiss", cxxopts::value<size_t>()->default_value("800"))
+    ("ef-search", "efSearch Value", cxxopts::value<size_t>()->default_value("0"))
     ("d,debug", "Logging all debug logs")
     ("h,help", "Print usage");
   // clang-format on
@@ -38,8 +40,10 @@ inline const CLIArguments parseCLIArgs(int argc, char** argv) {
     std::exit(0);
   }
 
-  return {args["host"].as<std::string>(),        args["index-file"].as<std::string>(), args["port"].as<size_t>(),
-          args["listener-threads"].as<size_t>(), args["num-k"].as<size_t>(),           args["debug"].as<bool>()};
+  return {args["host"].as<std::string>(), args["index-file"].as<std::string>(),
+          args["port"].as<size_t>(),      args["listener-threads"].as<size_t>(),
+          args["num-k"].as<size_t>(),     args["ef-search"].as<size_t>(),
+          args["debug"].as<bool>()};
 }
 
 inline size_t parseJsonPayload(const std::string& payload,
@@ -54,11 +58,11 @@ inline size_t parseJsonPayload(const std::string& payload,
       throw std::runtime_error("Cannot parse json object. Root object must be json object.");
 
     simdjson::dom::array queries;
-    simdjson::error_code error = element["queries"].get(queries);
+    simdjson::error_code error = element["query_embeddings"].get(queries);
     if (error)
       throw std::runtime_error(simdjson::error_message(error));
 
-    error = element["numK"].get(numK);  // ignore error
+    error = element["top_k"].get(numK);  // ignore error
 
     outputVector.reserve(queries.size() * dimension);
 
@@ -82,6 +86,8 @@ inline std::string constructJson(const faiss::Index::idx_t* labels,
                                  const float* distances,
                                  int64_t numK,
                                  size_t numQueries) {
+  std::string str;
+  str.reserve(numK * numQueries * 8);
   std::stringstream outputJson;
 
   outputJson << "{\"distances\":[";
@@ -94,7 +100,7 @@ inline std::string constructJson(const faiss::Index::idx_t* labels,
     }
     outputJson << "]";
   }
-  outputJson << "],\"indices\":[";
+  outputJson << "],\"nearest_indices\":[";
   for (int i = 0; i < numQueries; i++) {
     outputJson << "[";
     for (int j = 0; j < numK; j++) {
