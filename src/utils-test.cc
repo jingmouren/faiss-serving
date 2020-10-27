@@ -32,9 +32,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(std::make_pair<std::vector<std::string>, fs::CLIArguments>({"run-test", "--host", "0.0.0.0"},
                                                                                {"0.0.0.0", "", 8080, 4, false}),
                     std::make_pair<std::vector<std::string>, fs::CLIArguments>({"run-test", "-i", "test"},
-                                                                               {"localhost", "test", 8080, 4, false}),
-                    std::make_pair<std::vector<std::string>, fs::CLIArguments>({"run-test", "-d"},
-                                                                               {"localhost", "", 8080, 4, true})));
+                                                                               {"localhost", "test", 8080, 4, false})));
 
 TEST(server_util_test, parse_json__root_object_test) {
   std::vector<float> v;
@@ -60,11 +58,11 @@ TEST(server_util_test, parse_json__parsing_error) {
               testing::ThrowsMessage<std::runtime_error>(
                   testing::HasSubstr("The JSON field referenced does not exist in this object.")));
 
-  ASSERT_THAT([&]() { fs::parseJsonPayload("{\"query_embeddings\": [0, 1, 2]}", 128, v, numK); },
+  ASSERT_THAT([&]() { fs::parseJsonPayload("{\"queries\": [0, 1, 2]}", 128, v, numK); },
               testing::ThrowsMessage<std::runtime_error>(
                   testing::HasSubstr("The JSON element does not have the requested type.")));
 
-  ASSERT_THAT([&]() { fs::parseJsonPayload("{\"query_embeddings\": [[0, 1, 2]]}", 2, v, numK); },
+  ASSERT_THAT([&]() { fs::parseJsonPayload("{\"queries\": [[0, 1, 2]]}", 2, v, numK); },
               testing::ThrowsMessage<std::runtime_error>(testing::HasSubstr("Dimension mismatch.")));
 }
 
@@ -72,12 +70,12 @@ TEST(server_util_test, parse_json) {
   std::vector<float> outputVector;
   int64_t numK = -1;
 
-  fs::parseJsonPayload("{\"query_embeddings\": [[1, 2]]}", 2, outputVector, numK);
+  fs::parseJsonPayload("{\"queries\": [[1, 2]]}", 2, outputVector, numK);
   ASSERT_THAT(outputVector, testing::ElementsAre(1, 2));
   ASSERT_EQ(numK, -1);
 
   outputVector.clear();
-  fs::parseJsonPayload("{\"query_embeddings\": [[1, 2,3,4,5], [6,7,8,9,0]], \"top_k\": 10}", 5, outputVector, numK);
+  fs::parseJsonPayload("{\"queries\": [[1, 2,3,4,5], [6,7,8,9,0]], \"top_k\": 10}", 5, outputVector, numK);
   ASSERT_THAT(outputVector, testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9, 0));
   ASSERT_EQ(numK, 10);
 }
