@@ -38,7 +38,6 @@ include_directories(${PROJECT_SOURCE_DIR}/third_party/cxxopts/include)
 add_executable(faiss-serving src/main.cc)
 target_link_libraries(faiss-serving faiss simdjson)
 
-
 if(BUILD_TEST)
   enable_testing()
   add_subdirectory(${PROJECT_SOURCE_DIR}/third_party/googletest)
