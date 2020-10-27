@@ -18,16 +18,16 @@ struct CLIArguments {
 };
 
 inline const CLIArguments parseCLIArgs(int argc, char** argv) {
-  cxxopts::Options options(argv[0], "Embedding Search HTTP Server");
+  cxxopts::Options options(argv[0], "A lightweight Faiss HTTP Server\n");
 
   // clang-format off
   options.add_options()
     ("host", "Host", cxxopts::value<std::string>()->default_value("localhost"))
-    ("i,index-file", "Faiss index file path", cxxopts::value<std::string>()->default_value(""))
     ("p,port", "Port", cxxopts::value<size_t>()->default_value("8080"))
-    ("t,listener-threads", "Num Threads to use for http server", cxxopts::value<size_t>()->default_value("4"))
-    ("k,num-k", "Num K for Faiss", cxxopts::value<size_t>()->default_value("800"))
-    ("hnsw-ef-search", "efSearch Value", cxxopts::value<size_t>()->default_value("0"))
+    ("i,index-file", "Faiss index file path", cxxopts::value<std::string>()->default_value(""))
+    ("t,listener-threads", "Num threads to use for http server", cxxopts::value<size_t>()->default_value("4"))
+    ("k,num-k", "Default num k", cxxopts::value<size_t>()->default_value("800"))
+    ("hnsw-ef-search", "efSearch Value for hnsw index", cxxopts::value<size_t>()->default_value("0"))
     ("h,help", "Print usage");
   // clang-format on
 
