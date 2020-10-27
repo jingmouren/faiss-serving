@@ -7,7 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_TEST "Build the tests" OFF)
 option(USE_GPU "Use GPU in Faiss" OFF)
 
-set(SOURCE_CODE)
 set(TEST_CODE src/server-test.cc)
 
 find_package(OpenMP REQUIRED)
@@ -36,7 +35,7 @@ include_directories(${PROJECT_SOURCE_DIR}/third_party/simdjson/include)
 include_directories(${PROJECT_SOURCE_DIR}/third_party/cpp-httplib)
 include_directories(${PROJECT_SOURCE_DIR}/third_party/cxxopts/include)
 
-add_executable(faiss-serving src/main.cc ${SOURCE_CODE})
+add_executable(faiss-serving src/main.cc)
 target_link_libraries(faiss-serving faiss simdjson)
 
 
@@ -47,7 +46,7 @@ if(BUILD_TEST)
   include_directories(${gtest_SOURCE_DIR}/include)
   include_directories(${gmock_SOURCE_DIR}/include)
 
-  add_executable(run-test ${TEST_CODE} ${SOURCE_CODE})
+  add_executable(run-test src/utils-test.cc)
   target_link_libraries(run-test gtest gmock gtest_main faiss simdjson)
 
   add_test(NAME run-test COMMAND ./run-test)

@@ -14,8 +14,7 @@ struct CLIArguments {
   const size_t port;
   const size_t listenerThreads;
   const size_t numK;
-  const size_t efSearch;
-  const bool debug;
+  const size_t hnswEfSearch;
 };
 
 inline const CLIArguments parseCLIArgs(int argc, char** argv) {
@@ -28,8 +27,7 @@ inline const CLIArguments parseCLIArgs(int argc, char** argv) {
     ("p,port", "Port", cxxopts::value<size_t>()->default_value("8080"))
     ("t,listener-threads", "Num Threads to use for http server", cxxopts::value<size_t>()->default_value("4"))
     ("k,num-k", "Num K for Faiss", cxxopts::value<size_t>()->default_value("800"))
-    ("ef-search", "efSearch Value", cxxopts::value<size_t>()->default_value("0"))
-    ("d,debug", "Logging all debug logs")
+    ("hnsw-ef-search", "efSearch Value", cxxopts::value<size_t>()->default_value("0"))
     ("h,help", "Print usage");
   // clang-format on
 
@@ -42,8 +40,7 @@ inline const CLIArguments parseCLIArgs(int argc, char** argv) {
 
   return {args["host"].as<std::string>(), args["index-file"].as<std::string>(),
           args["port"].as<size_t>(),      args["listener-threads"].as<size_t>(),
-          args["num-k"].as<size_t>(),     args["ef-search"].as<size_t>(),
-          args["debug"].as<bool>()};
+          args["num-k"].as<size_t>(),     args["hnsw-ef-search"].as<size_t>()};
 }
 
 inline size_t parseJsonPayload(const std::string& payload,
@@ -58,7 +55,7 @@ inline size_t parseJsonPayload(const std::string& payload,
       throw std::runtime_error("Cannot parse json object. Root object must be json object.");
 
     simdjson::dom::array queries;
-    simdjson::error_code error = element["query_embeddings"].get(queries);
+    simdjson::error_code error = element["queries"].get(queries);
     if (error)
       throw std::runtime_error(simdjson::error_message(error));
 
@@ -100,7 +97,7 @@ inline std::string constructJson(const faiss::Index::idx_t* labels,
     }
     outputJson << "]";
   }
-  outputJson << "],\"nearest_indices\":[";
+  outputJson << "],\"indices\":[";
   for (int i = 0; i < numQueries; i++) {
     outputJson << "[";
     for (int j = 0; j < numK; j++) {
