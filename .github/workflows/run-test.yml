@@ -1,0 +1,31 @@
+name: Run Test
+
+on: [push]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Create Build Environment
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DBUILD_TEST=ON
+
+    - name: Build
+      run: |
+        cd build
+        make
+
+    - name: Test
+      run: |
+        cd build
+        ./run-test
