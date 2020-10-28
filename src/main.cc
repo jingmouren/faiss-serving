@@ -46,21 +46,18 @@ int main(int argc, char** argv) {
       if (numK <= 0)
         numK = config.numK;
 
-      float* distances = new float[numK * numQueries];
-      faiss::Index::idx_t* labels = new faiss::Index::idx_t[numK * numQueries];
+      std::vector<float> distances(numK * numQueries);
+      std::vector<faiss::Index::idx_t> labels(numK * numQueries);
 
-      index->search(numQueries, queryVector.data(), (faiss::Index::idx_t)(numK == -1 ? config.numK : numK), distances,
-                    labels);
+      index->search(numQueries, queryVector.data(), (faiss::Index::idx_t)(numK == -1 ? config.numK : numK),
+                    distances.data(), labels.data());
 
-      res.set_content(fs::constructJson(labels, distances, numK, numQueries), "application/json");
-
-      delete[] distances;
-      delete[] labels;
+      res.set_content(fs::constructJson(labels.data(), distances.data(), numK, numQueries), "application/json");
     } catch (std::exception& error) {
       spdlog::error(error.what());
 
       res.status = 400;
-      res.set_content("{\"reason\": \"" + std::string(error.what()) + "\"}", "applciation/json");
+      res.set_content("{\"reason\": \"" + std::string(error.what()) + "\"}", "application/json");
     }
   });
 
