@@ -1,8 +1,8 @@
-name: Publush latest docker image
+name: Publish latest Docker image
 
 on:
   push:
-    branches: 
+    branches:
       - main
 
 jobs:
