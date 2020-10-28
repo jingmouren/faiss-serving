@@ -96,6 +96,8 @@ inline std::string constructJson(const faiss::Index::idx_t* labels,
         outputJson << ",";
     }
     outputJson << "]";
+    if (i != numQueries - 1)
+      outputJson << ",";
   }
   outputJson << "],\"indices\":[";
   for (int i = 0; i < numQueries; i++) {
@@ -106,6 +108,8 @@ inline std::string constructJson(const faiss::Index::idx_t* labels,
         outputJson << ",";
     }
     outputJson << "]";
+    if (i != numQueries - 1)
+      outputJson << ",";
   }
   outputJson << "]}";
 
