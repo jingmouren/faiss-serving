@@ -1,5 +1,5 @@
 """
-Building Tutorial Codes from https://github.com/facebookresearch/faiss/wiki/Getting-started
+Tutorial Codes from https://github.com/facebookresearch/faiss/wiki/Getting-started
 """
 
 
