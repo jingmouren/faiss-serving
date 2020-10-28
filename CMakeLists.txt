@@ -7,8 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_TEST "Build the tests" OFF)
 option(USE_GPU "Use GPU in Faiss" OFF)
 
-set(TEST_CODE src/server-test.cc)
-
 find_package(OpenMP REQUIRED)
 if (OPENMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
