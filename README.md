@@ -8,6 +8,8 @@ A lightweight Faiss HTTP Server 🚀
 
 ### Using docker
 
+You can use [our pre-built docker image. (scatterlab/faiss-serving)](https://hub.docker.com/r/scatterlab/faiss-serving)
+
 ```sh
 $ docker run \
   -p $HOST_PORT:8080 \
